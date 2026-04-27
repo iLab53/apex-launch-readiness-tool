@@ -1,0 +1,26 @@
+{
+  "schema": "STRATEGIST Signal Object v1.0",
+  "fields": {
+    "signal_id":           "UUID string",
+    "region":              "EU | APAC | US | Africa",
+    "source_url":          "string",
+    "source_domain":       "string",
+    "publication_date":    "YYYY-MM-DD",
+    "raw_excerpt":         "string max 300 chars",
+    "classification":      "OPPORTUNITY | RISK | NEUTRAL",
+    "signal_subtype":      "REGULATION | ENFORCEMENT | PARTNERSHIP | INVESTMENT | RESEARCH",
+    "corroboration_urls":  "array of strings",
+    "source_tier":         "TIER_1 | TIER_2 | TIER_3",
+    "validation_status":   "PASSED | FLAGGED | FAILED",
+    "validation_notes":    "string",
+    "confidence_score":    "float 0.0-1.0",
+    "confidence_rationale":"string",
+    "evidence_grade":      "HIGH | MEDIUM | LOW",
+    "grader_notes":        "string",
+    "feedback_iteration":  "int 0-2",
+    "hitl_decision":       "APPROVED | REJECTED | OVERRIDE",
+    "hitl_notes":          "string",
+    "adversarial_verdict": "CONFIRM | CHALLENGE | REJECT",
+    "adversarial_notes":   "string"
+  }
+}

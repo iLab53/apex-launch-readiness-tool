@@ -1,0 +1,174 @@
+{
+  "version": "1.0.0",
+  "last_updated": "2026-04-27",
+  "assets": [
+    {
+      "asset_id": "APEX-001",
+      "brand_name": "Darzalex",
+      "generic_name": "daratumumab",
+      "indication": "Multiple Myeloma",
+      "therapeutic_area": "Oncology",
+      "lifecycle_stage": "POST-LAUNCH",
+      "formulations": ["IV", "SC (Darzalex Faspro)"],
+      "regulatory_status": {
+        "FDA": "Approved",
+        "EMA": "Approved",
+        "NICE": "Approved (multiple submissions)"
+      },
+      "key_competitors": ["Bortezomib", "Lenalidomide", "Carfilzomib", "Isatuximab (Sarclisa)"],
+      "comm_ex_priorities": ["Market share defense", "Combination regimen pull-through", "SC conversion", "Real-world evidence generation"],
+      "medical_affairs_focus": ["Investigator-initiated studies", "KOL engagement", "HEOR data development"],
+      "market_access_focus": ["Payer contract optimization", "Outcomes-based agreements", "HEOR submissions"],
+      "key_messages": [
+        "Daratumumab-based regimens are the standard of care across MM lines",
+        "SC formulation delivers equivalent efficacy with superior patient convenience",
+        "Broad combination flexibility supports personalized treatment"
+      ],
+      "notes": "Flagship oncology asset; focus on lifecycle extension and combo expansion"
+    },
+    {
+      "asset_id": "APEX-002",
+      "brand_name": "Carvykti",
+      "generic_name": "ciltacabtagene autoleucel",
+      "indication": "Relapsed/Refractory Multiple Myeloma",
+      "therapeutic_area": "Oncology",
+      "lifecycle_stage": "LAUNCH",
+      "formulations": ["CAR-T cell therapy (one-time infusion)"],
+      "regulatory_status": {
+        "FDA": "Approved",
+        "EMA": "Approved (conditional)",
+        "NICE": "Under review"
+      },
+      "key_competitors": ["Ide-cel (Abecma)", "Belantamab mafodotin (Blenrep)", "Talquetamab (Talvey)"],
+      "comm_ex_priorities": ["Site of care expansion", "Patient identification and referral", "Early-line data storytelling", "Manufacturing slot access"],
+      "medical_affairs_focus": ["CAR-T center certification", "HCP education on patient selection", "Safety profile communication"],
+      "market_access_focus": ["Coverage and reimbursement", "Outcomes-based contracts", "CMS CMMI model participation"],
+      "key_messages": [
+        "Carvykti delivers deep and durable responses in RRMM",
+        "One-time treatment offers transformative potential vs. chronic therapy",
+        "Strong CARTITUDE trial data supports early-line use"
+      ],
+      "notes": "Cell therapy; manufacturing capacity and certified treatment center network are key constraints"
+    },
+    {
+      "asset_id": "APEX-003",
+      "brand_name": "Rybrevant",
+      "generic_name": "amivantamab",
+      "indication": "EGFR-mutated Non-Small Cell Lung Cancer",
+      "therapeutic_area": "Oncology",
+      "lifecycle_stage": "LAUNCH",
+      "formulations": ["IV", "SC (in development/approval)"],
+      "regulatory_status": {
+        "FDA": "Approved (EGFR Exon 20 insertion; 1L EGFR combo)",
+        "EMA": "Approved",
+        "NICE": "Under review"
+      },
+      "key_competitors": ["Osimertinib (Tagrisso)", "Erlotinib", "Afatinib", "Lazertinib (combo partner)"],
+      "comm_ex_priorities": ["Oncologist education on Exon 20 testing", "1L combination positioning", "SC launch preparation", "Biomarker testing pull-through"],
+      "medical_affairs_focus": ["PAPILLON and MARIPOSA data dissemination", "Molecular testing advocacy", "Pulmonologist/oncologist KOL engagement"],
+      "market_access_focus": ["Formulary access in community oncology", "Companion diagnostic reimbursement", "HEOR vs. osimertinib"],
+      "key_messages": [
+        "Rybrevant + lazertinib is a 1L chemo-free regimen with superior PFS vs. osimertinib",
+        "Only approved bispecific targeting both EGFR and MET",
+        "SC formulation will reduce infusion burden significantly"
+      ],
+      "notes": "Biomarker-driven launch; molecular testing infrastructure is a critical success factor"
+    },
+    {
+      "asset_id": "APEX-004",
+      "brand_name": "Tremfya",
+      "generic_name": "guselkumab",
+      "indication": "Plaque Psoriasis; Psoriatic Arthritis",
+      "therapeutic_area": "Immunology",
+      "lifecycle_stage": "POST-LAUNCH",
+      "formulations": ["SC"],
+      "regulatory_status": {
+        "FDA": "Approved",
+        "EMA": "Approved",
+        "NICE": "Approved"
+      },
+      "key_competitors": ["Skyrizi (risankizumab)", "Taltz (ixekizumab)", "Cosentyx (secukinumab)", "Humira (adalimumab)"],
+      "comm_ex_priorities": ["PsA share growth", "IL-17 vs IL-23 positioning", "Biologic-naive patient capture", "Adherence programs"],
+      "medical_affairs_focus": ["Long-term safety data", "Head-to-head study amplification", "Dermatology and rheumatology KOL alignment"],
+      "market_access_focus": ["Step-edit policy challenges", "Formulary tier optimization", "Patient support program ROI"],
+      "key_messages": [
+        "Selective IL-23 inhibition provides complete and sustained skin clearance",
+        "Durable efficacy maintained through 4 years",
+        "Q8W maintenance dosing after Year 1 supports adherence"
+      ],
+      "notes": "Mature asset; growth opportunity in PsA and lifecycle vs. Skyrizi competition"
+    },
+    {
+      "asset_id": "APEX-005",
+      "brand_name": "Nipocalimab",
+      "generic_name": "nipocalimab",
+      "indication": "Generalized Myasthenia Gravis; Sjögren's Disease; Hemolytic Disease of the Fetus and Newborn",
+      "therapeutic_area": "Immunology",
+      "lifecycle_stage": "PRE-LAUNCH",
+      "formulations": ["IV"],
+      "regulatory_status": {
+        "FDA": "Under review (gMG; PDUFA 2026)",
+        "EMA": "Filing in progress",
+        "NICE": "Pre-submission engagement"
+      },
+      "key_competitors": ["Efgartigimod (Vyvgart)", "Rozanolixizumab (Rystiggo)", "Ravulizumab (Ultomiris, for gMG)"],
+      "comm_ex_priorities": ["KOL pre-launch seeding", "Payer landscape assessment", "Disease awareness in rare neuromuscular", "Launch readiness infrastructure"],
+      "medical_affairs_focus": ["Phase 3 VIVACITY-MG data publication", "Neurology KOL advisory boards", "Nurse educator programs"],
+      "market_access_focus": ["Rare disease payer strategy", "ICER review preparation", "Centers of Excellence contracting"],
+      "key_messages": [
+        "Nipocalimab is a selective FcRn blocker with broad autoimmune potential",
+        "VIVACITY-MG3 data demonstrate rapid, sustained MG symptom reduction",
+        "Platform molecule with potential across multiple IgG-mediated diseases"
+      ],
+      "notes": "Pre-launch; PDUFA date watch critical; launch team activation required Q2-Q3 2026"
+    },
+    {
+      "asset_id": "APEX-006",
+      "brand_name": "Spravato",
+      "generic_name": "esketamine",
+      "indication": "Treatment-Resistant Depression; Major Depressive Disorder with Acute Suicidal Ideation",
+      "therapeutic_area": "Neuroscience",
+      "lifecycle_stage": "POST-LAUNCH",
+      "formulations": ["Intranasal (REMS program)"],
+      "regulatory_status": {
+        "FDA": "Approved (TRD and MDD-SI)",
+        "EMA": "Approved (TRD)",
+        "NICE": "Approved (TRD)"
+      },
+      "key_competitors": ["Auvelity (dextromethorphan/bupropion)", "Ketamine IV (compounded)", "SSRIs/SNRIs + adjuncts"],
+      "comm_ex_priorities": ["Certified treatment center network growth", "Psychiatrist adoption", "Payer coverage expansion", "Patient journey acceleration"],
+      "medical_affairs_focus": ["Long-term safety and durability evidence", "Suicidality indication data storytelling", "Real-world evidence in TRD population"],
+      "market_access_focus": ["REMS-compliant site reimbursement models", "Commercial and Medicare coverage", "Outcomes-based payer agreements"],
+      "key_messages": [
+        "Spravato is the first and only FDA-approved nasal spray for TRD",
+        "Rapid onset of action within hours vs. weeks for oral antidepressants",
+        "TRANSFORM and SUSTAIN data demonstrate durable remission"
+      ],
+      "notes": "REMS requirement limits prescribing to certified sites; site expansion is the primary growth lever"
+    },
+    {
+      "asset_id": "APEX-007",
+      "brand_name": "Ponvory",
+      "generic_name": "ponesimod",
+      "indication": "Relapsing Forms of Multiple Sclerosis",
+      "therapeutic_area": "Neuroscience",
+      "lifecycle_stage": "LAUNCH",
+      "formulations": ["Oral (once daily)"],
+      "regulatory_status": {
+        "FDA": "Approved",
+        "EMA": "Approved",
+        "NICE": "Approved"
+      },
+      "key_competitors": ["Mayzent (siponimod)", "Kesimpta (ofatumumab)", "Ocrevus (ocrelizumab)", "Tysabri (natalizumab)"],
+      "comm_ex_priorities": ["Neurologist conversion from oral S1P competitors", "Cardiac monitoring differentiation", "Naïve patient capture", "KOL advocacy programs"],
+      "medical_affairs_focus": ["OPTIMUM trial amplification", "Cardiac safety profile education", "MS nurse and coordinator engagement"],
+      "market_access_focus": ["Formulary access vs. Mayzent/Kesimpta", "Patient assistance programs", "Specialty pharmacy channel optimization"],
+      "key_messages": [
+        "Ponvory demonstrated superior annualized relapse rate vs. teriflunomide in OPTIMUM",
+        "Selective S1P1 receptor modulation with no S1P3 activity supports cardiac safety",
+        "Gradual dose titration pack simplifies initiation for patients and HCPs"
+      ],
+      "notes": "Competitive oral MS market; differentiation on cardiac selectivity and efficacy data is key"
+    }
+  ]
+}

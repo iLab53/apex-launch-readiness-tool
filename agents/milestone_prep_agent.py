@@ -1,27 +1,27 @@
-# agents/milestone_prep_agent.py
+﻿# agents/milestone_prep_agent.py
 # APEX Milestone Prep Agent
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Generates governance-ready milestone documents for a given asset + milestone
 # type.  Produces a structured 5-section JSON document that can be committed as
 # a governance artifact or used as a Codex prompt payload for prose generation.
 #
 # Milestone types:
-#   ADP_REVIEW          — Asset Development Plan Review (senior leadership)
-#   LRR                 — Launch Readiness Review (90–120 days pre-launch)
-#   LRP                 — Launch Readiness Plan (final launch sign-off)
-#   INVESTMENT_DECISION — Portfolio investment gate / budget allocation
-#   GOVERNANCE          — Quarterly governance / board-level update
+#   ADP_REVIEW          â€” Asset Development Plan Review (senior leadership)
+#   LRR                 â€” Launch Readiness Review (90â€“120 days pre-launch)
+#   LRP                 â€” Launch Readiness Plan (final launch sign-off)
+#   INVESTMENT_DECISION â€” Portfolio investment gate / budget allocation
+#   GOVERNANCE          â€” Quarterly governance / board-level update
 #
 # 5-section output schema:
-#   1. executive_summary   — posture + decision required + headline rec
-#   2. asset_readiness     — per-dimension scores + trend
-#   3. risk_register       — top 3–5 risks with owner + mitigation
-#   4. financial_snapshot  — revenue at stake + access risk quantification
-#   5. recommendation      — Proceed / Proceed with conditions / Pause / Stop
+#   1. executive_summary   â€” posture + decision required + headline rec
+#   2. asset_readiness     â€” per-dimension scores + trend
+#   3. risk_register       â€” top 3â€“5 risks with owner + mitigation
+#   4. financial_snapshot  â€” revenue at stake + access risk quantification
+#   5. recommendation      â€” Proceed / Proceed with conditions / Pause / Stop
 #
 # Usage:
 #   python run_comm_ex.py --milestone-prep APEX-001 LRR
-# ─────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Optional
 
-# ── Config ────────────────────────────────────────────────────────────────────
+# â”€â”€ Config â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 MILESTONE_TYPES: dict[str, str] = {
     "ADP_REVIEW":          "Asset Development Plan Review",
@@ -40,8 +40,9 @@ MILESTONE_TYPES: dict[str, str] = {
     "INVESTMENT_DECISION": "Investment Decision Gate",
     "GOVERNANCE":          "Governance / Board Update",
 }
+SUPPORTED_MILESTONE_TYPES = ['ADP_REVIEW', 'LRR', 'LRP', 'INVESTMENT_DECISION', 'GOVERNANCE']
 
-# ── Paths ─────────────────────────────────────────────────────────────────────
+# â”€â”€ Paths â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # milestone_prep_agent.py lives at  <repo>/agents/milestone_prep_agent.py
 
 _REPO_ROOT     = Path(__file__).parent.parent
@@ -51,7 +52,7 @@ ASSET_REG_PATH = _REPO_ROOT / "asset-registry" / "apex_assets.json"
 PROMPT_PATH    = AGENTS_DIR / "milestone_prep_prompt.txt"
 
 
-# ── 1. load_milestone_prompt ──────────────────────────────────────────────────
+# â”€â”€ 1. load_milestone_prompt â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def load_milestone_prompt() -> str:
     """
@@ -73,7 +74,7 @@ def load_milestone_prompt() -> str:
 
 def _default_prompt() -> str:
     return """\
-# APEX Milestone Prep Agent — System Prompt
+# APEX Milestone Prep Agent â€” System Prompt
 # Version: 1.0
 
 You are the APEX Milestone Preparation Agent for J&J Innovative Medicine.
@@ -81,35 +82,35 @@ Your role is to generate governance-ready milestone documents that prepare
 commercial and medical affairs leadership for critical asset decision gates.
 
 You produce structured, evidence-based documents for five milestone types:
-  ADP_REVIEW          — Asset Development Plan Review
-  LRR                 — Launch Readiness Review (90-120 days pre-launch)
-  LRP                 — Launch Readiness Plan (final launch sign-off)
-  INVESTMENT_DECISION — Portfolio investment gate or budget allocation
-  GOVERNANCE          — Quarterly governance or board-level update
+  ADP_REVIEW          â€” Asset Development Plan Review
+  LRR                 â€” Launch Readiness Review (90-120 days pre-launch)
+  LRP                 â€” Launch Readiness Plan (final launch sign-off)
+  INVESTMENT_DECISION â€” Portfolio investment gate or budget allocation
+  GOVERNANCE          â€” Quarterly governance or board-level update
 
 For each milestone document, produce exactly five sections:
 
-  1. Executive Summary     — 3-5 sentences: state the milestone, asset posture,
+  1. Executive Summary     â€” 3-5 sentences: state the milestone, asset posture,
                              and single most important decision required.
                              Flag any launch-blocking gap in the first sentence.
 
-  2. Asset Readiness       — Current readiness state across Market Access,
+  2. Asset Readiness       â€” Current readiness state across Market Access,
                              Medical Affairs, Marketing, Commercial Ops,
                              Regulatory, and Patient Support dimensions.
                              For each dimension: score (1-5), trend, confidence,
                              and top gap with owner.
 
-  3. Risk Register         — Top 3-5 risks with: likelihood, impact, owner,
+  3. Risk Register         â€” Top 3-5 risks with: likelihood, impact, owner,
                              and mitigation action + target close date.
                              Cite regulatory signals (FDA/EMA/NICE/CMS) where
                              applicable. Escalate launch-blocking risks to the
                              Executive Summary.
 
-  4. Financial Snapshot    — Revenue at stake, Year 1 forecast, launch
+  4. Financial Snapshot    â€” Revenue at stake, Year 1 forecast, launch
                              investment required, and payer/access risk
                              quantification in dollar terms (base + downside).
 
-  5. Recommendation        — Single, unambiguous governance recommendation:
+  5. Recommendation        â€” Single, unambiguous governance recommendation:
                              Proceed / Proceed with conditions / Pause / Stop.
                              If conditional: name each condition with owner and
                              target close date.
@@ -119,13 +120,13 @@ Rules:
   - Write in imperative, decision-ready language
   - Cite specific signals (FDA/EMA/NICE/CMS/competitive) for every risk
   - Every risk and gap must have a named owner
-  - Do not hedge — state best assessment with explicit confidence level
+  - Do not hedge â€” state best assessment with explicit confidence level
   - Never recommend Proceed when a launch-blocking gap exists
-  - Cap at 5 risks in the risk register — prioritise ruthlessly
+  - Cap at 5 risks in the risk register â€” prioritise ruthlessly
 """
 
 
-# ── 2. build_milestone_document ───────────────────────────────────────────────
+# â”€â”€ 2. build_milestone_document â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def build_milestone_document(
     asset_id:       str,
@@ -139,7 +140,7 @@ def build_milestone_document(
     Loads asset context from apex_assets.json and (optionally) the latest
     scorecard JSON for pre-populated readiness scores.
 
-    Returns a fully populated document dict.  Does not call the LLM — this
+    Returns a fully populated document dict.  Does not call the LLM â€” this
     is a scaffold that becomes either a governance artifact or a Codex/LLM
     prompt payload for prose generation.
 
@@ -200,7 +201,33 @@ def build_milestone_document(
     return document
 
 
-# ── Section builders ──────────────────────────────────────────────────────────
+def get_asset_by_id(asset_id: str) -> Optional[dict]:
+    return _load_asset(asset_id)
+
+
+def generate_milestone_prep(asset_id, milestone_type, briefing=None):
+    # Validate asset_id
+    asset = get_asset_by_id(asset_id)
+    if asset is None:
+        raise ValueError(
+            f"Asset {asset_id} not found in registry. "
+            "Run: python -c \"from asset_registry.asset_registry import "
+            "load_assets; [print(a['asset_id']) for a in load_assets()]\""
+        )
+
+    # Validate milestone_type
+    milestone_type = milestone_type.upper()
+    if milestone_type not in SUPPORTED_MILESTONE_TYPES:
+        raise ValueError(
+            f"Unknown milestone type: {milestone_type}. "
+            f"Supported: {SUPPORTED_MILESTONE_TYPES}"
+        )
+
+    # Proceed with context build and API call
+    return build_milestone_document(asset_id, milestone_type, verbose=False)
+
+
+# â”€â”€ Section builders â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _exec_summary(
     asset_ctx:  Optional[dict],
@@ -234,7 +261,7 @@ def _exec_summary(
             f"currently in {launch_phase} phase. "
             f"Overall readiness tier: {tier}. "
             "KEY DECISION REQUIRED: [State the single most important governance decision here]. "
-            "RECOMMENDATION HEADLINE: [One sentence — Proceed / Proceed with conditions / Pause / Stop]."
+            "RECOMMENDATION HEADLINE: [One sentence â€” Proceed / Proceed with conditions / Pause / Stop]."
         ),
         "instructions": (
             "Replace bracket placeholders with signal-grounded content before distribution. "
@@ -271,7 +298,7 @@ def _asset_readiness(
             }
         else:
             dim_status[dim] = {
-                "score":      "N/A — run --scorecard to populate",
+                "score":      "N/A â€” run --scorecard to populate",
                 "trend":      "Not enough data",
                 "confidence": "Low",
                 "rationale":  "[Run: python run_apex.py --scorecard --asset <ID>]",
@@ -302,7 +329,7 @@ def _risk_register(
             "risk_id":          f"RISK-{i:02d}",
             "dimension":        gap.get("dimension", "Unknown"),
             "description":      gap.get("gap_description", "[Describe risk]"),
-            "likelihood":       "Medium — validate against current signals",
+            "likelihood":       "Medium â€” validate against current signals",
             "impact":           gap.get("severity", "High"),
             "owner":            gap.get("owner", "TBD"),
             "mitigation":       "[Define mitigation action, owner, and close date]",
@@ -316,7 +343,7 @@ def _risk_register(
             ("RISK-01", "Market Access",           "Payer coverage decision delayed beyond launch date",                    "High",   "Market Access"),
             ("RISK-02", "Medical Affairs",          "MSL deployment incomplete in key accounts at launch",                  "Medium", "Medical Affairs"),
             ("RISK-03", "Regulatory Compliance",    "Label negotiation outcome narrower than modelled indication",           "High",   "Regulatory"),
-            ("RISK-04", "Marketing Brand",          "Competitive response faster than anticipated — PDUFA threat imminent",  "Medium", "Marketing"),
+            ("RISK-04", "Marketing Brand",          "Competitive response faster than anticipated â€” PDUFA threat imminent",  "Medium", "Marketing"),
             ("RISK-05", "Commercial Operations",    "Field force training completion <90% at launch date",                  "Medium", "Commercial Ops"),
         ]
         for risk_id, dim, desc, impact, owner in templates:
@@ -324,7 +351,7 @@ def _risk_register(
                 "risk_id":          risk_id,
                 "dimension":        dim,
                 "description":      desc,
-                "likelihood":       "Medium — validate with current signals",
+                "likelihood":       "Medium â€” validate with current signals",
                 "impact":           impact,
                 "owner":            owner,
                 "mitigation":       "[Define mitigation action, owner, and target close date]",
@@ -338,7 +365,7 @@ def _risk_register(
         "instructions": (
             "For each risk: cite the specific signal (FDA/EMA/NICE/CMS/Competitive) "
             "driving likelihood and impact. Escalate any launch-blocking risk to "
-            "the Executive Summary. Cap at 5 risks — rank by launch impact."
+            "the Executive Summary. Cap at 5 risks â€” rank by launch impact."
         ),
     }
 
@@ -355,10 +382,10 @@ def _financial_snapshot(
         "revenue_at_stake": {
             "peak_sales_estimate_usd_bn":    peak_sales,
             "revenue_risk_pct":              "[Estimate % of forecast at risk from access/label/competitive gaps]",
-            "year_1_forecast_usd_m":         "[Year 1 revenue forecast — confirm with Finance]",
+            "year_1_forecast_usd_m":         "[Year 1 revenue forecast â€” confirm with Finance]",
         },
         "investment_required": {
-            "launch_investment_usd_m":       "[Total launch investment budget — confirm with Finance]",
+            "launch_investment_usd_m":       "[Total launch investment budget â€” confirm with Finance]",
             "incremental_ask_this_milestone": "[Any incremental investment decision required at this gate]",
         },
         "access_risk_quantification": {
@@ -369,7 +396,7 @@ def _financial_snapshot(
         "patent_expiry": patent_exp,
         "instructions": (
             "Populate all brackets with Finance-confirmed figures before governance presentation. "
-            "Quantify payer risk in dollar terms — present base case and downside scenario."
+            "Quantify payer risk in dollar terms â€” present base case and downside scenario."
         ),
     }
 
@@ -382,13 +409,13 @@ def _recommendation(
     tier = (scorecard or {}).get("overall", {}).get("readiness_tier", "Not assessed")
 
     if "Gold" in tier or "Green" in tier:
-        preliminary = "PROCEED — readiness tier supports forward motion at this gate"
+        preliminary = "PROCEED â€” readiness tier supports forward motion at this gate"
     elif "Amber" in tier:
-        preliminary = "PROCEED WITH CONDITIONS — named gaps must close before next gate"
+        preliminary = "PROCEED WITH CONDITIONS â€” named gaps must close before next gate"
     elif "Red" in tier:
-        preliminary = "PAUSE — launch-blocking gaps require resolution before proceeding"
+        preliminary = "PAUSE â€” launch-blocking gaps require resolution before proceeding"
     else:
-        preliminary = "ASSESSMENT REQUIRED — run --scorecard before governance presentation"
+        preliminary = "ASSESSMENT REQUIRED â€” run --scorecard before governance presentation"
 
     return {
         "section":                   "Recommendation",
@@ -412,7 +439,7 @@ def _recommendation(
     }
 
 
-# ── Asset / scorecard loaders ─────────────────────────────────────────────────
+# â”€â”€ Asset / scorecard loaders â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def _load_asset(asset_id: str) -> Optional[dict]:
     if not ASSET_REG_PATH.exists():
@@ -435,7 +462,7 @@ def _load_latest_scorecard(asset_id: str) -> Optional[dict]:
     return None
 
 
-# ── 3. save_milestone_doc ─────────────────────────────────────────────────────
+# â”€â”€ 3. save_milestone_doc â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def save_milestone_doc(document: dict, verbose: bool = True) -> Path:
     """
@@ -457,7 +484,7 @@ def save_milestone_doc(document: dict, verbose: bool = True) -> Path:
     return filename
 
 
-# ── CLI entry point ───────────────────────────────────────────────────────────
+# â”€â”€ CLI entry point â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 def run_milestone_prep(
     asset_id:       str,
@@ -478,3 +505,4 @@ def run_milestone_prep(
         print(f"\n  Milestone document ready: {save_path}")
 
     return document
+

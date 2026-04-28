@@ -1,15 +1,15 @@
-# run_comm_ex.py
-# AI & Digital Transformation Tool — Johnson & Johnson Innovative Medicine
+﻿# run_comm_ex.py
+# AI & Digital Transformation Tool Ã¢â‚¬â€ Johnson & Johnson Innovative Medicine
 """
 Main entry point for the AI & Digital Transformation pipeline.
 
 Orchestrates two phases:
-  Phase 1 — Intelligence Engine (pharma regulatory + market signals)
+  Phase 1 Ã¢â‚¬â€ Intelligence Engine (pharma regulatory + market signals)
              Runs the multi-agent strategist pipeline adapted for pharma sources.
              Output: strategist-engine/reports/strategist_run_*.json
                      strategist-engine/reports/strategist_briefing_*.html
 
-  Phase 2 — Comm Ex Layer (commercialization recommendations)
+  Phase 2 Ã¢â‚¬â€ Comm Ex Layer (commercialization recommendations)
              Translates the intelligence briefing into structured commercial
              recommendations for J&J 3M teams: Marketing, Medical Affairs,
              Market Access.
@@ -33,17 +33,13 @@ import traceback
 from datetime import datetime, timezone
 from pathlib import Path
 
-# ── Path setup ────────────────────────────────────────────────────────────────
-ROOT_DIR   = Path(__file__).parent
+ROOT_DIR = Path(__file__).parent
 ENGINE_DIR = ROOT_DIR / "strategist-engine"
 COMM_EX_DIR = ROOT_DIR / "comm-ex"
 
-# Add engine to path so we can import coordinator
 sys.path.insert(0, str(ENGINE_DIR))
 sys.path.insert(0, str(COMM_EX_DIR))
 
-
-# ── Console helpers ───────────────────────────────────────────────────────────
 
 def _banner(text: str) -> None:
     width = 60
@@ -51,43 +47,40 @@ def _banner(text: str) -> None:
     print(f"  {text}")
     print("=" * width)
 
+
 def _section(text: str) -> None:
-    print(f"\n{'─' * 50}")
+    print(f"\n{'Ã¢â€â‚¬' * 50}")
     print(f"  {text}")
-    print(f"{'─' * 50}")
+    print(f"{'Ã¢â€â‚¬' * 50}")
+
 
 def _ok(text: str) -> None:
     print(f"  [OK]  {text}")
 
+
 def _warn(text: str) -> None:
     print(f"  [!!]  {text}")
 
+
 def _info(text: str) -> None:
-    print(f"  ···   {text}")
+    print(f"  Ã‚Â·Ã‚Â·Ã‚Â·   {text}")
 
-
-# ── Phase 1: Intelligence Engine ──────────────────────────────────────────────
 
 def run_intelligence_engine(verbose: bool = True) -> dict:
-    """
-    Run the pharma-adapted STRATEGIST intelligence engine.
-    Returns the coordinator result dict.
-    """
     if verbose:
-        _section("PHASE 1 — Pharma Intelligence Engine")
+        _section("PHASE 1 Ã¢â‚¬â€ Pharma Intelligence Engine")
         _info("Fetching signals from FDA, EMA, NICE, CMS, ICER, ClinicalTrials.gov...")
 
     t0 = time.time()
 
     try:
-        # Import coordinator from engine directory
         from strategist_hello import coordinator
         result = coordinator()
         elapsed = time.time() - t0
 
         if verbose:
             sigs = len(result.get("final_signals", []))
-            _ok(f"Engine complete — {sigs} signals processed in {elapsed:.1f}s")
+            _ok(f"Engine complete Ã¢â‚¬â€ {sigs} signals processed in {elapsed:.1f}s")
             report = result.get("report_path", "")
             if report:
                 _ok(f"Report: {Path(report).name}")
@@ -101,16 +94,9 @@ def run_intelligence_engine(verbose: bool = True) -> dict:
         raise
 
 
-# ── Phase 2: Comm Ex Layer ────────────────────────────────────────────────────
-
 def run_comm_ex(briefing: str | None = None, verbose: bool = True) -> dict:
-    """
-    Run the Comm Ex recommendations layer.
-    If briefing is None, loads the latest from engine reports.
-    Returns the comm ex result dict.
-    """
     if verbose:
-        _section("PHASE 2 — Commercialization Excellence Layer")
+        _section("PHASE 2 Ã¢â‚¬â€ Commercialization Excellence Layer")
         _info("Generating Comm Ex recommendations for Marketing / Medical Affairs / Market Access...")
 
     try:
@@ -132,23 +118,17 @@ def run_comm_ex(briefing: str | None = None, verbose: bool = True) -> dict:
         raise
 
 
-# ── Coverage validation ───────────────────────────────────────────────────────
-
 def _validate_coverage(recs: list[dict], verbose: bool = True) -> bool:
-    """
-    Check that mandatory distribution requirements are met.
-    Returns True if all checks pass.
-    """
     from collections import Counter
     stages = Counter(r.get("asset_stage", "") for r in recs)
-    funcs  = Counter(r.get("function_owner", "") for r in recs)
-    areas  = Counter(r.get("therapeutic_area", "") for r in recs)
+    funcs = Counter(r.get("function_owner", "") for r in recs)
+    areas = Counter(r.get("therapeutic_area", "") for r in recs)
 
     checks = {
-        "PRE-LAUNCH ≥ 2":   stages.get("PRE-LAUNCH", 0) >= 2,
-        "LAUNCH ≥ 2":       stages.get("LAUNCH", 0) >= 2,
-        "POST-LAUNCH ≥ 2":  stages.get("POST-LAUNCH", 0) >= 2,
-        "≥ 2 functions":    len(funcs) >= 2,
+        "PRE-LAUNCH Ã¢â€°Â¥ 2": stages.get("PRE-LAUNCH", 0) >= 2,
+        "LAUNCH Ã¢â€°Â¥ 2": stages.get("LAUNCH", 0) >= 2,
+        "POST-LAUNCH Ã¢â€°Â¥ 2": stages.get("POST-LAUNCH", 0) >= 2,
+        "Ã¢â€°Â¥ 2 functions": len(funcs) >= 2,
         "Oncology present": areas.get("Oncology", 0) >= 1,
         "Immunology present": areas.get("Immunology", 0) >= 1,
     }
@@ -163,8 +143,6 @@ def _validate_coverage(recs: list[dict], verbose: bool = True) -> bool:
     return all(checks.values())
 
 
-# ── Main orchestrator ─────────────────────────────────────────────────────────
-
 def main(
     engine_only: bool = False,
     comm_ex_only: bool = False,
@@ -173,15 +151,14 @@ def main(
     run_date = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
 
     if verbose:
-        _banner(f"AI & Digital Transformation Tool | J&J Innovative Medicine")
+        _banner("AI & Digital Transformation Tool | J&J Innovative Medicine")
         print(f"  {run_date}")
         print(f"  Engine only: {engine_only} | Comm Ex only: {comm_ex_only}")
 
     t_start = time.time()
-    engine_result  = None
+    engine_result = None
     comm_ex_result = None
 
-    # ── Phase 1 ───────────────────────────────────────────────────────────────
     if not comm_ex_only:
         try:
             engine_result = run_intelligence_engine(verbose=verbose)
@@ -193,18 +170,14 @@ def main(
         _banner("Engine-only run complete")
         return
 
-    # ── Phase 2 ───────────────────────────────────────────────────────────────
     try:
         comm_ex_result = run_comm_ex(briefing=None, verbose=verbose)
     except Exception:
         print("\n[ABORT] Comm Ex layer failed.\n")
         sys.exit(1)
 
-    # ── Validation ────────────────────────────────────────────────────────────
     recs = comm_ex_result.get("recs", [])
     all_pass = _validate_coverage(recs, verbose=verbose)
-
-    # ── Final summary ─────────────────────────────────────────────────────────
     elapsed = time.time() - t_start
 
     if verbose:
@@ -212,7 +185,7 @@ def main(
 
         dash = comm_ex_result.get("dashboard", {})
         coverage = dash.get("coverage_check", {})
-        dist     = dash.get("distribution", {})
+        dist = dash.get("distribution", {})
 
         print("\n  DISTRIBUTION")
         for k, v in dist.get("by_asset_stage", {}).items():
@@ -231,14 +204,14 @@ def main(
         if imm:
             print(f"  IMMEDIATE ACTIONS ({len(imm)})")
             for a in imm:
-                owner  = a.get("function_owner","")
-                rec_id = a.get("rec_id","")
-                action = a.get("recommended_action","")[:90]
+                owner = a.get("function_owner", "")
+                rec_id = a.get("rec_id", "")
+                action = a.get("recommended_action", "")[:90]
                 print(f"    [{rec_id}] {owner}")
                 print(f"      {action}...")
                 print()
 
-        print(f"  Coverage validation: {'ALL PASS' if all_pass else 'GAPS DETECTED — review output'}")
+        print(f"  Coverage validation: {'ALL PASS' if all_pass else 'GAPS DETECTED Ã¢â‚¬â€ review output'}")
         print()
 
         paths = comm_ex_result.get("paths", {})
@@ -248,14 +221,11 @@ def main(
         print()
 
 
-# ── CLI ────────────────────────────────────────────────────────────────────────
-
 if __name__ == "__main__":
-    # Ensure Unicode output works on Windows terminals
     os.environ.setdefault("PYTHONIOENCODING", "utf-8")
 
     parser = argparse.ArgumentParser(
-        description="AI & Digital Transformation Tool — J&J Innovative Medicine",
+        description="AI & Digital Transformation Tool Ã¢â‚¬â€ J&J Innovative Medicine",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
@@ -272,12 +242,12 @@ Examples:
     parser.add_argument(
         "--engine-only",
         action="store_true",
-        help="Run intelligence engine only — do not generate Comm Ex recommendations",
+        help="Run intelligence engine only Ã¢â‚¬â€ do not generate Comm Ex recommendations",
     )
     parser.add_argument(
         "--comm-ex-only",
         action="store_true",
-        help="Skip engine — load latest briefing and generate Comm Ex recommendations only",
+        help="Skip engine Ã¢â‚¬â€ load latest briefing and generate Comm Ex recommendations only",
     )
     parser.add_argument(
         "--quiet",
@@ -296,7 +266,6 @@ Examples:
         default=False,
         help="Generate a Launch Readiness Scorecard for the given --asset.",
     )
-    # ── Day 5: Memory report ──────────────────────────────────────────────────
     parser.add_argument(
         "--memory-report",
         action="store_true",
@@ -308,24 +277,15 @@ Examples:
             "Optionally scoped to one asset with --asset."
         ),
     )
-    # ── Day 6: Milestone prep ─────────────────────────────────────────────────
     parser.add_argument(
         "--milestone-prep",
         nargs=2,
         metavar=("ASSET_ID", "MILESTONE_TYPE"),
-        default=None,
-        help=(
-            "Generate a governance-ready milestone document for the given asset "
-            "and milestone type.  "
-            "MILESTONE_TYPE must be one of: "
-            "ADP_REVIEW | LRR | LRP | INVESTMENT_DECISION | GOVERNANCE.  "
-            "Example: --milestone-prep APEX-004 LRR"
-        ),
+        help="Generate milestone prep document. Example: --milestone-prep APEX-004 LRR",
     )
 
     args = parser.parse_args()
 
-    # ── Memory report mode (Day 5) ────────────────────────────────────────────
     if args.memory_report:
         sys.path.insert(0, str(ROOT_DIR / "agents"))
         from memory_agent import run_memory_report
@@ -334,22 +294,20 @@ Examples:
             verbose=not args.quiet,
         )
         sys.exit(0)
-    # ─────────────────────────────────────────────────────────────────────────
 
-    # ── Milestone prep mode (Day 6) ───────────────────────────────────────────
     if args.milestone_prep:
-        asset_id_mp, milestone_type_mp = args.milestone_prep
-        sys.path.insert(0, str(ROOT_DIR / "agents"))
-        from milestone_prep_agent import run_milestone_prep
-        run_milestone_prep(
-            asset_id=asset_id_mp.upper(),
-            milestone_type=milestone_type_mp.upper(),
-            verbose=not args.quiet,
-        )
+        asset_id, milestone_type = args.milestone_prep
+        import sys, os
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'agents'))
+        from milestone_prep_agent import generate_milestone_prep
+        try:
+            path = generate_milestone_prep(asset_id, milestone_type)
+            print(f"Milestone prep document saved to: {path}")
+        except ValueError as e:
+            print(f"Error: {e}", file=sys.stderr)
+            sys.exit(1)
         sys.exit(0)
-    # ─────────────────────────────────────────────────────────────────────────
 
-    # ── Scorecard mode (Day 4) ────────────────────────────────────────────────
     if args.scorecard:
         if not args.asset:
             print("Error: --scorecard requires --asset <ASSET_ID>.", file=sys.stderr)
@@ -358,7 +316,6 @@ Examples:
         from scorecard_generator import generate_scorecard
         generate_scorecard(args.asset)
         sys.exit(0)
-    # ─────────────────────────────────────────────────────────────────────────
 
     if args.engine_only and args.comm_ex_only:
         print("Error: --engine-only and --comm-ex-only are mutually exclusive.")
@@ -369,3 +326,4 @@ Examples:
         comm_ex_only=args.comm_ex_only,
         verbose=not args.quiet,
     )
+

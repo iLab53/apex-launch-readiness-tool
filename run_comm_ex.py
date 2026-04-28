@@ -259,10 +259,14 @@ if __name__ == "__main__":
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Examples:
-  python run_comm_ex.py                 Full pipeline (engine + comm ex)
-  python run_comm_ex.py --comm-ex-only  Comm ex only (uses latest briefing)
-  python run_comm_ex.py --engine-only   Engine only (no comm ex)
-  python run_comm_ex.py --quiet         Minimal output
+  python run_comm_ex.py                              Full pipeline (engine + comm ex)
+  python run_comm_ex.py --comm-ex-only               Comm ex only (uses latest briefing)
+  python run_comm_ex.py --engine-only                Engine only (no comm ex)
+  python run_comm_ex.py --quiet                      Minimal output
+  python run_comm_ex.py --asset APEX-001 --scorecard Generate scorecard for one asset
+  python run_comm_ex.py --memory-report              Delta report vs previous run
+  python run_comm_ex.py --memory-report --asset APEX-004
+  python run_comm_ex.py --milestone-prep APEX-001 LRR
 """,
     )
     parser.add_argument(
@@ -281,37 +285,79 @@ Examples:
         help="Suppress detailed progress output",
     )
     parser.add_argument(
+        "--asset",
+        metavar="APEX_ID",
+        default=None,
+        help="Target a specific asset, e.g. APEX-001.  Used with --scorecard and --memory-report.",
+    )
+    parser.add_argument(
         "--scorecard",
         action="store_true",
         default=False,
         help="Generate a Launch Readiness Scorecard for the given --asset.",
     )
+    # ── Day 5: Memory report ──────────────────────────────────────────────────
     parser.add_argument(
-        "--asset",
-        type=str,
-        default=None,
-        help="Asset ID (e.g., asset_id) for scorecard generation.",
+        "--memory-report",
+        action="store_true",
+        default=False,
+        help=(
+            "Print a longitudinal delta report comparing current Comm Ex output "
+            "against the previous run stored in memory/.  "
+            "Classifies each rec as NEW / ESCALATED / RESOLVED / STABLE.  "
+            "Optionally scoped to one asset with --asset."
+        ),
     )
+    # ── Day 6: Milestone prep ─────────────────────────────────────────────────
+    parser.add_argument(
+        "--milestone-prep",
+        nargs=2,
+        metavar=("ASSET_ID", "MILESTONE_TYPE"),
+        default=None,
+        help=(
+            "Generate a governance-ready milestone document for the given asset "
+            "and milestone type.  "
+            "MILESTONE_TYPE must be one of: "
+            "ADP_REVIEW | LRR | LRP | INVESTMENT_DECISION | GOVERNANCE.  "
+            "Example: --milestone-prep APEX-004 LRR"
+        ),
+    )
+
     args = parser.parse_args()
 
-    # ── Scorecard mode ────────────────────────────────────────────────────────
+    # ── Memory report mode (Day 5) ────────────────────────────────────────────
+    if args.memory_report:
+        sys.path.insert(0, str(ROOT_DIR / "agents"))
+        from memory_agent import run_memory_report
+        run_memory_report(
+            asset_id=args.asset,
+            verbose=not args.quiet,
+        )
+        sys.exit(0)
+    # ─────────────────────────────────────────────────────────────────────────
+
+    # ── Milestone prep mode (Day 6) ───────────────────────────────────────────
+    if args.milestone_prep:
+        asset_id_mp, milestone_type_mp = args.milestone_prep
+        sys.path.insert(0, str(ROOT_DIR / "agents"))
+        from milestone_prep_agent import run_milestone_prep
+        run_milestone_prep(
+            asset_id=asset_id_mp.upper(),
+            milestone_type=milestone_type_mp.upper(),
+            verbose=not args.quiet,
+        )
+        sys.exit(0)
+    # ─────────────────────────────────────────────────────────────────────────
+
+    # ── Scorecard mode (Day 4) ────────────────────────────────────────────────
     if args.scorecard:
-        asset_id = getattr(args, "asset", None)
-
-if args.scorecard:
-    asset_id = getattr(args, "asset", None)
-
-    if not asset_id:
-        print("Error: --scorecard requires --asset <ASSET_ID>.", file=sys.stderr)
-        print("  Example: python run_comm_ex.py --asset APEX-001 --scorecard", file=sys.stderr)
-        sys.exit(1)
-
-    from scorecard_generator import generate_scorecard
-
-    print(f"[APEX] Generating Launch Readiness Scorecard for {asset_id}")
-    scorecard = generate_scorecard(asset_id)
-
-    sys.exit(0)
+        if not args.asset:
+            print("Error: --scorecard requires --asset <ASSET_ID>.", file=sys.stderr)
+            print("  Example: python run_comm_ex.py --asset APEX-001 --scorecard", file=sys.stderr)
+            sys.exit(1)
+        from scorecard_generator import generate_scorecard
+        generate_scorecard(args.asset)
+        sys.exit(0)
     # ─────────────────────────────────────────────────────────────────────────
 
     if args.engine_only and args.comm_ex_only:

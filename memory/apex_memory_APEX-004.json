@@ -1,0 +1,41 @@
+{
+  "asset_id": "APEX-004",
+  "brand_name": "",
+  "last_updated": "2026-04-28T02:33:14.507648+00:00",
+  "run_count": 2,
+  "recommendation_history": [
+    {
+      "run_id": "run_001",
+      "run_date": "2026-04-27",
+      "recommendations": [
+        {
+          "rec_id": "REC-001",
+          "recommended_action": "Accelerate payer pre-approval meetings for Tremfya formulary positioning",
+          "urgency": "Near-term (30-90d)"
+        }
+      ],
+      "launch_readiness_score": null
+    },
+    {
+      "run_id": "run_002",
+      "run_date": "2026-04-27",
+      "recommendations": [
+        {
+          "rec_id": "REC-001",
+          "recommended_action": "Accelerate payer pre-approval meetings for Tremfya formulary positioning",
+          "urgency": "Immediate (0-30d)"
+        }
+      ],
+      "launch_readiness_score": null
+    }
+  ],
+  "delta_summary": {
+    "new_recs": [],
+    "escalated_recs": [
+      "Accelerate payer pre-approval meetings for Tremfya"
+    ],
+    "resolved_recs": [],
+    "stable_recs": [],
+    "trend": "DETERIORATING"
+  }
+}

@@ -230,14 +230,20 @@ if __name__ == "__main__":
         epilog="""
 Examples:
   python run_comm_ex.py                              Full pipeline (engine + comm ex)
+  python run_comm_ex.py --full                       Full 6-phase APEX pipeline
   python run_comm_ex.py --comm-ex-only               Comm ex only (uses latest briefing)
   python run_comm_ex.py --engine-only                Engine only (no comm ex)
   python run_comm_ex.py --quiet                      Minimal output
-  python run_comm_ex.py --asset APEX-001 --scorecard Generate scorecard for one asset
+  python run_comm_ex.py --score-asset APEX-001       Generate scorecard for one asset
   python run_comm_ex.py --memory-report              Delta report vs previous run
   python run_comm_ex.py --memory-report --asset APEX-004
   python run_comm_ex.py --milestone-prep APEX-001 LRR
 """,
+    )
+    parser.add_argument(
+        "--full",
+        action="store_true",
+        help="Run the full pipeline.",
     )
     parser.add_argument(
         "--engine-only",
@@ -258,7 +264,13 @@ Examples:
         "--asset",
         metavar="APEX_ID",
         default=None,
-        help="Target a specific asset, e.g. APEX-001.  Used with --scorecard and --memory-report.",
+        help="Target a specific asset, e.g. APEX-001. Used with --scorecard and --memory-report.",
+    )
+    parser.add_argument(
+        "--score-asset",
+        metavar="APEX_ID",
+        default=None,
+        help="Generate scorecard for one asset.",
     )
     parser.add_argument(
         "--scorecard",
@@ -272,8 +284,8 @@ Examples:
         default=False,
         help=(
             "Print a longitudinal delta report comparing current Comm Ex output "
-            "against the previous run stored in memory/.  "
-            "Classifies each rec as NEW / ESCALATED / RESOLVED / STABLE.  "
+            "against the previous run stored in memory/. "
+            "Classifies each rec as NEW / ESCALATED / RESOLVED / STABLE. "
             "Optionally scoped to one asset with --asset."
         ),
     )
@@ -289,6 +301,7 @@ Examples:
     if args.memory_report:
         sys.path.insert(0, str(ROOT_DIR / "agents"))
         from memory_agent import run_memory_report
+
         run_memory_report(
             asset_id=args.asset,
             verbose=not args.quiet,
@@ -298,8 +311,10 @@ Examples:
     if args.milestone_prep:
         asset_id, milestone_type = args.milestone_prep
         import sys, os
-        sys.path.insert(0, os.path.join(os.path.dirname(__file__), 'agents'))
+
+        sys.path.insert(0, os.path.join(os.path.dirname(__file__), "agents"))
         from milestone_prep_agent import generate_milestone_prep
+
         try:
             path = generate_milestone_prep(asset_id, milestone_type)
             print(f"Milestone prep document saved to: {path}")
@@ -314,16 +329,26 @@ Examples:
             print("  Example: python run_comm_ex.py --asset APEX-001 --scorecard", file=sys.stderr)
             sys.exit(1)
         from scorecard_generator import generate_scorecard
+
         generate_scorecard(args.asset)
+        sys.exit(0)
+
+    if args.score_asset:
+        from scorecard_generator import generate_scorecard
+
+        generate_scorecard(args.score_asset)
         sys.exit(0)
 
     if args.engine_only and args.comm_ex_only:
         print("Error: --engine-only and --comm-ex-only are mutually exclusive.")
         sys.exit(1)
 
-    main(
-        engine_only=args.engine_only,
+    from apex_coordinator import apex_run
+
+    result = apex_run(
+        full=not (args.comm_ex_only or args.engine_only),
         comm_ex_only=args.comm_ex_only,
+        engine_only=args.engine_only,
         verbose=not args.quiet,
     )
 

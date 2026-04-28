@@ -280,8 +280,39 @@ Examples:
         action="store_true",
         help="Suppress detailed progress output",
     )
-
+    parser.add_argument(
+        "--scorecard",
+        action="store_true",
+        default=False,
+        help="Generate a Launch Readiness Scorecard for the given --asset.",
+    )
+    parser.add_argument(
+        "--asset",
+        type=str,
+        default=None,
+        help="Asset ID (e.g., asset_id) for scorecard generation.",
+    )
     args = parser.parse_args()
+
+    # ── Scorecard mode ────────────────────────────────────────────────────────
+    if args.scorecard:
+        asset_id = getattr(args, "asset", None)
+
+if args.scorecard:
+    asset_id = getattr(args, "asset", None)
+
+    if not asset_id:
+        print("Error: --scorecard requires --asset <ASSET_ID>.", file=sys.stderr)
+        print("  Example: python run_comm_ex.py --asset APEX-001 --scorecard", file=sys.stderr)
+        sys.exit(1)
+
+    from scorecard_generator import generate_scorecard
+
+    print(f"[APEX] Generating Launch Readiness Scorecard for {asset_id}")
+    scorecard = generate_scorecard(asset_id)
+
+    sys.exit(0)
+    # ─────────────────────────────────────────────────────────────────────────
 
     if args.engine_only and args.comm_ex_only:
         print("Error: --engine-only and --comm-ex-only are mutually exclusive.")

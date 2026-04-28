@@ -1,17 +1,17 @@
-# comm_ex_generator.py
-# AI & Digital Transformation Tool — Johnson & Johnson Innovative Medicine
+﻿# comm_ex_generator.py
+# AI & Digital Transformation Tool Ã¢â‚¬â€ Johnson & Johnson Innovative Medicine
 """
 Translates pharma regulatory and market intelligence into structured,
 executable commercialization recommendations for J&J 3M teams:
   Marketing | Medical Affairs | Market Access
 
 Therapeutic focus: Oncology | Immunology | Neuroscience
-Asset coverage:    PRE-LAUNCH → LAUNCH → POST-LAUNCH
+Asset coverage:    PRE-LAUNCH Ã¢â€ â€™ LAUNCH Ã¢â€ â€™ POST-LAUNCH
 
 Outputs (per run):
-  comm_ex_recommendations_{DATE}_{RUN_ID}.json  — full structured recs
-  comm_ex_summary_{DATE}_{RUN_ID}.txt           — executive summary
-  comm_ex_dashboard_ready.json                  — aggregated KPIs (always latest)
+  comm_ex_recommendations_{DATE}_{RUN_ID}.json  Ã¢â‚¬â€ full structured recs
+  comm_ex_summary_{DATE}_{RUN_ID}.txt           Ã¢â‚¬â€ executive summary
+  comm_ex_dashboard_ready.json                  Ã¢â‚¬â€ aggregated KPIs (always latest)
 """
 
 import json
@@ -20,13 +20,17 @@ import uuid
 from collections import Counter
 from datetime import datetime, timezone
 from pathlib import Path
+import sys
+import os
 
 import anthropic
 
-# ── Asset Registry (Day 1 addition) ───────────────────────────────────────────
+# Ã¢â€â‚¬Ã¢â€â‚¬ Asset Registry (Day 1 addition) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬ 
 import sys as _sys
 import os as _os
 _sys.path.insert(0, str(_os.path.join(_os.path.dirname(__file__), "..", "asset-registry")))
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "agents"))
+from memory_agent import update_memory
 try:
     from asset_registry import format_asset_context_for_prompt as _fmt_asset
 except ImportError:
@@ -40,24 +44,24 @@ OUTPUT_DIR = Path(__file__).parent / "outputs"
 ENGINE_REPORTS = Path(__file__).parent.parent / "strategist-engine" / "reports"
 
 
-# ══════════════════════════════════════════════════════════════════════════════
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 #  Director of Comm Ex persona
-# ══════════════════════════════════════════════════════════════════════════════
+# Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 
 SYSTEM = """\
 You are the Director of Commercialization Excellence AI & Digital Transformation \
 at Johnson & Johnson Innovative Medicine.
 
 Your mandate: translate pharma regulatory and market intelligence into concrete, \
-cross-functional commercial strategy for J&J's 3M teams — Marketing, Medical Affairs, \
-and Market Access — across Oncology, Immunology, and Neuroscience portfolios.
+cross-functional commercial strategy for J&J's 3M teams Ã¢â‚¬â€ Marketing, Medical Affairs, \
+and Market Access Ã¢â‚¬â€ across Oncology, Immunology, and Neuroscience portfolios.
 
 You think like a business product leader building enterprise-grade commercial \
 intelligence tools, not like an analyst writing reports.
 
 Your non-negotiable standards:
 - Every recommendation drives a real commercial decision with a named owner
-- Every recommendation has a measurable KPI — not a vague aspiration
+- Every recommendation has a measurable KPI Ã¢â‚¬â€ not a vague aspiration
 - You NEVER produce generic actions ("monitor", "assess", "consider impact")
 - You ALWAYS connect a regulatory or market signal to a specific asset stage consequence
 - You think in terms of launch sequencing, access barriers, physician behavior, \
@@ -66,22 +70,22 @@ Your non-negotiable standards:
 Output only valid JSON arrays. No preamble, no markdown fences."""
 
 QUALITY_RUBRIC = """\
-QUALITY BAR — STRICT
+QUALITY BAR Ã¢â‚¬â€ STRICT
 
 REJECT any recommendation that:
-  ✗ Could apply to any industry (must be pharma-specific)
-  ✗ Lacks a named function owner
-  ✗ Lacks a concrete, quantifiable KPI
-  ✗ Is not tied to a named signal, agency, or regulatory event
-  ✗ Uses passive or hedged language ("may", "consider", "explore")
+  Ã¢Å“â€” Could apply to any industry (must be pharma-specific)
+  Ã¢Å“â€” Lacks a named function owner
+  Ã¢Å“â€” Lacks a concrete, quantifiable KPI
+  Ã¢Å“â€” Is not tied to a named signal, agency, or regulatory event
+  Ã¢Å“â€” Uses passive or hedged language ("may", "consider", "explore")
 
 STRONG recommendations:
-  ✓ Name a specific drug class, asset type, or commercial capability
-  ✓ Link to a named agency decision, trial readout, or payer signal
-  ✓ State exactly what a top-performing 3M team does THIS WEEK
-  ✓ Quantify the cost of delay (lost access, market share, launch velocity)
+  Ã¢Å“â€œ Name a specific drug class, asset type, or commercial capability
+  Ã¢Å“â€œ Link to a named agency decision, trial readout, or payer signal
+  Ã¢Å“â€œ State exactly what a top-performing 3M team does THIS WEEK
+  Ã¢Å“â€œ Quantify the cost of delay (lost access, market share, launch velocity)
 
-THINKING FRAMEWORK — for each signal:
+THINKING FRAMEWORK Ã¢â‚¬â€ for each signal:
   1. Does this affect: pricing | access | physician behavior | launch timing | competitive positioning?
   2. Which asset stage is most exposed: PRE-LAUNCH | LAUNCH | POST-LAUNCH?
   3. Which function owns the decision: Marketing | Medical Affairs | Market Access | Cross-functional?
@@ -103,9 +107,9 @@ Each recommendation MUST follow this EXACT schema (no extra fields, no omissions
 
   "target":              "Specific drug class, portfolio segment, or commercial capability (NOT generic)",
 
-  "why_this_matters":    "One sentence: [named signal] → [direct commercial implication]",
+  "why_this_matters":    "One sentence: [named signal] Ã¢â€ â€™ [direct commercial implication]",
 
-  "recommended_action":  "Specific executable action beginning with a strong verb. ≥ 20 words.",
+  "recommended_action":  "Specific executable action beginning with a strong verb. Ã¢â€°Â¥ 20 words.",
 
   "function_owner":      "Marketing | Medical Affairs | Market Access | Cross-functional",
 
@@ -115,7 +119,7 @@ Each recommendation MUST follow this EXACT schema (no extra fields, no omissions
 launch velocity improvement | adherence gain | competitive differentiation",
 
   "kpi":                 "Measurable metric with a numeric target, e.g.: \
-'Tier-2+ formulary coverage across ≥60% of targeted payers within 90 days'",
+'Tier-2+ formulary coverage across Ã¢â€°Â¥60% of targeted payers within 90 days'",
 
   "risk_if_no_action":   "Specific consequence within the timeline window if action is not taken",
 
@@ -131,28 +135,28 @@ ASSET_CONTEXT_PLACEHOLDER
 
 You have received the following pharmaceutical regulatory and market intelligence briefing:
 
-══════════════════════════════════════════════════════════════════════════════
+Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 BRIEFING_PLACEHOLDER
-══════════════════════════════════════════════════════════════════════════════
+Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 
 QUALITY_RUBRIC_PLACEHOLDER
 
 SCHEMA_PLACEHOLDER
 
-════════════════════════════════════════════════════════════════════════════
+Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
 TASK
-════════════════════════════════════════════════════════════════════════════
-Generate 6–10 commercialization recommendations for J&J Innovative Medicine \
+Ã¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢ÂÃ¢â€¢Â
+Generate 6Ã¢â‚¬â€œ10 commercialization recommendations for J&J Innovative Medicine \
 3M teams (Marketing, Medical Affairs, Market Access) across Oncology, \
 Immunology, and Neuroscience.
 
-MANDATORY DISTRIBUTION — your output WILL be rejected if any of these are missing:
-  ≥ 2  PRE-LAUNCH recommendations
-  ≥ 2  LAUNCH recommendations
-  ≥ 2  POST-LAUNCH recommendations
-  ≥ 2  different function owners represented
-  ≥ 1  Oncology therapeutic area
-  ≥ 1  Immunology therapeutic area
+MANDATORY DISTRIBUTION Ã¢â‚¬â€ your output WILL be rejected if any of these are missing:
+  Ã¢â€°Â¥ 2  PRE-LAUNCH recommendations
+  Ã¢â€°Â¥ 2  LAUNCH recommendations
+  Ã¢â€°Â¥ 2  POST-LAUNCH recommendations
+  Ã¢â€°Â¥ 2  different function owners represented
+  Ã¢â€°Â¥ 1  Oncology therapeutic area
+  Ã¢â€°Â¥ 1  Immunology therapeutic area
 
 ORDERING: Confidence descending (HIGH first), then timeline ascending \
 (Immediate before Near-term before Mid-term).
@@ -185,7 +189,7 @@ TOP 3 RECOMMENDATIONS
 For each: rec_id | function_owner | timeline
 One sentence: what to do and why now.
 
-LEADERSHIP ACTIONS — NEXT 7 DAYS
+LEADERSHIP ACTIONS Ã¢â‚¬â€ NEXT 7 DAYS
 3 specific decisions. Each must name a decision-maker (CCO, Head of Market Access, \
 Global Brand Lead) and a deadline date.
 
@@ -195,10 +199,6 @@ Top 2 risks of inaction. Each: risk | asset_stage affected | commercial conseque
 
 Plain prose. Decisive. No hedging. Every sentence earns its place."""
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  Dashboard builder
-# ══════════════════════════════════════════════════════════════════════════════
 
 def _build_dashboard(recs: list[dict], run_id: str, run_date: str) -> dict:
     total    = len(recs)
@@ -268,10 +268,6 @@ def _build_dashboard(recs: list[dict], run_id: str, run_date: str) -> dict:
     }
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-#  Helpers
-# ══════════════════════════════════════════════════════════════════════════════
-
 def _parse_json(text: str) -> list[dict]:
     text = re.sub(r"^```(?:json)?\s*", "", text.strip())
     text = re.sub(r"\s*```$", "", text).strip()
@@ -294,7 +290,7 @@ def _enforce(recs: list[dict], short_id: str, run_date: str) -> list[dict]:
         rec.setdefault("run_id", short_id)
         rec.setdefault("date",   run_date)
         for f in REQUIRED:
-            rec.setdefault(f, "—")
+            rec.setdefault(f, "Ã¢â‚¬â€")
         out.append(rec)
     return out
 
@@ -312,40 +308,24 @@ def load_latest_briefing() -> str | None:
     return None
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-#  Core generation
-# ══════════════════════════════════════════════════════════════════════════════
-
 def generate_recommendations(
     briefing: str,
     run_id: str,
     run_date: str,
     asset_id: str | None = None,
 ) -> list[dict]:
-    """
-    Generate Comm Ex recommendations from a briefing.
-
-    Args:
-        briefing:  Intelligence briefing text (from strategist engine or ad-hoc).
-        run_id:    UUID for this run (used in rec_id and output filenames).
-        run_date:  ISO date string, e.g. "2026-04-27".
-        asset_id:  Optional APEX asset ID (e.g. "APEX-002"). When provided,
-                   injects full asset context into the prompt so recommendations
-                   are grounded in that asset's stage, competitors, and priorities.
-    """
     short_id = run_id[:8]
     client   = anthropic.Anthropic()
     schema   = (SCHEMA_DESCRIPTION
                 .replace("RUNID_PLACEHOLDER", short_id)
                 .replace("DATE_PLACEHOLDER",  run_date))
 
-    # ── Asset context injection (Day 1 addition) ───────────────────────────────
     if asset_id:
         asset_context = _fmt_asset(asset_id)
         if not asset_context:
-            asset_context = f"[Asset context unavailable for {asset_id} — proceeding with portfolio-level analysis]"
+            asset_context = f"[Asset context unavailable for {asset_id} Ã¢â‚¬â€ proceeding with portfolio-level analysis]"
     else:
-        asset_context = "[No specific asset selected — generating portfolio-level recommendations across all 7 APEX assets]"
+        asset_context = "[No specific asset selected Ã¢â‚¬â€ generating portfolio-level recommendations across all 7 APEX assets]"
 
     prompt = (PROMPT_TEMPLATE
               .replace("DATE_PLACEHOLDER",           run_date)
@@ -375,10 +355,6 @@ def generate_summary(recs: list[dict], run_id: str, run_date: str) -> str:
     return msg.content[0].text.strip()
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-#  Save
-# ══════════════════════════════════════════════════════════════════════════════
-
 def save_outputs(recs, summary, dashboard, run_id, run_date, out_dir=OUTPUT_DIR):
     out_dir.mkdir(parents=True, exist_ok=True)
     short_id = run_id[:8]
@@ -395,25 +371,12 @@ def save_outputs(recs, summary, dashboard, run_id, run_date, out_dir=OUTPUT_DIR)
     return paths
 
 
-# ══════════════════════════════════════════════════════════════════════════════
-#  Public API
-# ══════════════════════════════════════════════════════════════════════════════
-
 def run(
     briefing: str | None = None,
     out_dir: Path = OUTPUT_DIR,
     verbose: bool = True,
     asset_id: str | None = None,
 ) -> dict:
-    """
-    Full Comm Ex pipeline: load briefing → generate recs → summarize → save.
-
-    Args:
-        briefing:  Raw briefing text. If None, loads latest from strategist engine.
-        out_dir:   Directory for output files.
-        verbose:   Print progress to stdout.
-        asset_id:  Optional APEX asset ID to scope recommendations (e.g. "APEX-003").
-    """
     run_id   = str(uuid.uuid4())
     run_date = datetime.now(timezone.utc).strftime("%Y-%m-%d")
     if briefing is None:
@@ -429,11 +392,38 @@ def run(
     summary   = generate_summary(recs, run_id, run_date)
     dashboard = _build_dashboard(recs, run_id, run_date)
     paths     = save_outputs(recs, summary, dashboard, run_id, run_date, out_dir)
+
+    # Ã¢â€â‚¬Ã¢â€â‚¬ Memory update (Day 5) Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬Ã¢â€â‚¬
+    memory_run_id   = f"run_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    memory_run_date = datetime.now().strftime('%Y-%m-%d')
+
+    recs_by_asset = {}
+    for rec in recs:
+        aid = rec.get("asset_id") or "UNKNOWN"
+        recs_by_asset.setdefault(aid, []).append(rec)
+
+    memory_deltas = {}
+    for memory_asset_id, asset_recs in recs_by_asset.items():
+        if memory_asset_id == "UNKNOWN":
+            continue
+        delta = update_memory(memory_asset_id, memory_run_id, memory_run_date, asset_recs)
+        memory_deltas[memory_asset_id] = delta.get("delta_summary", {})
+
+    result = {
+        "recs": recs,
+        "summary": summary,
+        "dashboard": dashboard,
+        "paths": paths,
+        "run_id": run_id,
+        "run_date": run_date,
+    }
+    result["memory_deltas"] = memory_deltas
+
     if verbose:
         print(f"\n{'='*60}")
-        print(f"  COMM EX — Complete | Run {run_id[:8]} | {run_date}")
+        print(f"  COMM EX Ã¢â‚¬â€ Complete | Run {run_id[:8]} | {run_date}")
         for label, path in paths.items():
             print(f"  {label:<20}: {path}")
         print(f"{'='*60}\n")
-    return {"recs": recs, "summary": summary, "dashboard": dashboard,
-            "paths": paths, "run_id": run_id, "run_date": run_date}
+    return result
+

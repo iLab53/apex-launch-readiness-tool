@@ -1,0 +1,47 @@
+name: apex-add-asset
+
+description: >
+  Add a new asset to the APEX pipeline.
+  Scaffolds a full JSON entry in asset-registry/apex_assets.json
+  with all required fields including an upcoming_milestones placeholder.
+  After adding, run apex-run (mode=comm-ex-only) to generate the first
+  scorecard and recommendations for the new asset.
+
+inputs:
+  - name: apex_id
+    description: "APEX asset ID, e.g. APEX-008"
+    required: true
+
+  - name: brand_name
+    description: "Commercial brand name, e.g. Erleada"
+    required: true
+
+  - name: therapeutic_area
+    description: "Oncology | Immunology | Neuroscience"
+    required: true
+
+  - name: asset_stage
+    description: "PRE-LAUNCH | LAUNCH | POST-LAUNCH"
+    required: true
+
+prompt: |
+  Read asset-registry/apex_assets.json.
+  Load the file content using json.loads(), not string concatenation.
+  Append a new asset object to the "assets" list with these exact fields:
+    apex_id: {{ apex_id }}
+    asset_id: {{ apex_id }}
+    brand_name: {{ brand_name }}
+    generic_name: "[TO BE FILLED]"
+    indication: "[TO BE FILLED]"
+    mechanism_of_action: "[TO BE FILLED]"
+    therapeutic_area: {{ therapeutic_area }}
+    lifecycle_stage: {{ asset_stage }}
+    asset_stage: {{ asset_stage }}
+    launch_date: null
+    upcoming_milestones: []
+  Write the updated object back using json.dumps(indent=2).
+  Do not write the file as plain text strings.
+  Print the total asset count after writing to confirm success.
+
+success_message: "Asset {{ brand_name }} ({{ apex_id }}) added to apex_assets.json."
+error_message: "Failed to add asset. Check that apex_assets.json is valid JSON and the assets key exists."

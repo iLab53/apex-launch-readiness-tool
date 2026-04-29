@@ -1,0 +1,20 @@
+name: apex-run
+
+description: >
+  Run the full APEX commercial intelligence pipeline.
+  Executes all 6 phases: signal collection, HITL, asset scoring,
+  Comm Ex recommendations, milestone prep, and dashboard refresh.
+  Use mode=comm-ex-only to skip Phase 1 signal collection (faster).
+  Use mode=engine-only to run Phase 1 only.
+
+inputs:
+  - name: mode
+    description: "Pipeline mode: full | comm-ex-only | engine-only"
+    default: full
+    required: false
+
+command: |
+  python run_apex.py {% if mode == 'comm-ex-only' %}--comm-ex-only{% elif mode == 'engine-only' %}--engine-only{% endif %} --verbose
+
+success_message: "APEX pipeline run complete. Check comm-ex/outputs/ for results."
+error_message: "Pipeline failed. Check logs/nightly_run.log for details."

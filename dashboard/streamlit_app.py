@@ -286,18 +286,187 @@ def render_module_2():
                 for kpi_item in kpi_list:
                     st.write(f"- {kpi_item}")
 
+
 def render_module_3():
     """HTA & Market Access -- HTA event feed per asset."""
+    import json as _json
+
     st.subheader("HTA & Market Access")
     st.caption(f"Data as of: {last_run_timestamp()}")
-    st.info("Module 3 body coming in Day 9. Stub active.")
+
+    hta_events = st.session_state.get("dashboard", {}).get("hta_events", {})
+
+    if not hta_events:
+        st.info("No HTA events on record.")
+        return
+
+    def hta_body_badge(hta_body):
+        colours = {"NICE": "#003865", "EUnetHTA": "#6A0DAD", "ICER": "#C9960C"}
+        colour = colours.get(hta_body, "#374649")
+        return (
+            "<span style='background:" + colour
+            + ";color:white;padding:3px 10px;"
+            + "border-radius:4px;font-size:12px;font-weight:bold;'>"
+            + hta_body + "</span>"
+        )
+
+    def decision_badge(decision_type):
+        colours = {"POSITIVE": "#375623", "RESTRICTED": "#974706", "NEGATIVE": "#7B0000"}
+        colour = colours.get(decision_type, "#374649")
+        return (
+            "<span style='background:" + colour
+            + ";color:white;padding:3px 10px;"
+            + "border-radius:4px;font-size:12px;font-weight:bold;'>"
+            + decision_type + "</span>"
+        )
+
+    apex_ids = list(hta_events.keys())
+    selected_id = st.selectbox("Select Asset", apex_ids, key="hta_asset_selector")
+    events = hta_events.get(selected_id, [])
+
+    if not events:
+        st.info("No HTA events on record.")
+        return
+
+    for event in events:
+        hta_body = event.get("hta_body", "")
+        decision_type = event.get("decision_type", "")
+        indication = event.get("indication", "")
+        label = f"{hta_body} | {decision_type} | {indication}"
+
+        with st.expander(label, expanded=False):
+            st.markdown(
+                hta_body_badge(hta_body) + "&nbsp;&nbsp;" + decision_badge(decision_type),
+                unsafe_allow_html=True,
+            )
+            st.write("")
+            col_left, col_right = st.columns(2)
+            with col_left:
+                st.metric("Decision Date", event.get("decision_date", "N/A"))
+                st.metric("HTA Body", hta_body)
+            with col_right:
+                st.subheader("Reimbursement Strategy")
+                st.write(event.get("reimbursement_strategy", "N/A"))
+                st.caption("Evidence gap: " + event.get("evidence_gap", "N/A"))
+
+    st.download_button(
+        label="Export HTA Events (JSON)",
+        data=_json.dumps(events, indent=2),
+        file_name=f"hta_{selected_id}.json",
+        mime="application/json",
+    )
 
 
 def render_module_4():
     """Competitive Response -- 30-day cross-functional action plans."""
+    import io
+    import csv as _csv
+
     st.subheader("Competitive Response")
     st.caption(f"Data as of: {last_run_timestamp()}")
-    st.info("Module 4 body coming in Day 9. Stub active.")
+
+    competitive_intel = st.session_state.get("dashboard", {}).get("competitive_intel", {})
+
+    all_plans = []
+    for apex_id, plans in competitive_intel.items():
+        for plan in plans:
+            entry = dict(plan)
+            entry.setdefault("apex_id", apex_id)
+            all_plans.append(entry)
+
+    if not all_plans:
+        st.warning("No action plans match the selected filters.")
+        return
+
+    all_apex_ids = sorted({p.get("apex_id", "") for p in all_plans})
+    all_functions = sorted({p.get("function_owner", "") for p in all_plans})
+
+    col_f1, col_f2 = st.columns(2)
+    with col_f1:
+        selected_assets = st.multiselect(
+            "Asset", options=all_apex_ids, default=[], key="comp_asset_filter"
+        )
+    with col_f2:
+        selected_functions = st.multiselect(
+            "Function", options=all_functions, default=[], key="comp_function_filter"
+        )
+
+    filtered = all_plans
+    if selected_assets:
+        filtered = [p for p in filtered if p.get("apex_id") in selected_assets]
+    if selected_functions:
+        filtered = [p for p in filtered if p.get("function_owner") in selected_functions]
+
+    st.metric("Action Plans Displayed", len(filtered))
+
+    if not filtered:
+        st.warning("No action plans match the selected filters.")
+        return
+
+    def priority_badge(priority):
+        colours = {"IMMEDIATE": "#7B0000", "STRATEGIC": "#003865", "MONITOR": "#374649"}
+        colour = colours.get(priority, "#374649")
+        return (
+            "<span style='background:" + colour
+            + ";color:white;padding:3px 8px;"
+            + "border-radius:4px;font-size:11px;font-weight:bold;'>"
+            + priority + "</span>"
+        )
+
+    def function_badge(function_owner):
+        colours = {
+            "Market Access": "#1F3864", "Marketing": "#C9960C",
+            "Medical Affairs": "#375623", "Regulatory": "#4A235A",
+        }
+        colour = colours.get(function_owner, "#374649")
+        return (
+            "<span style='background:" + colour
+            + ";color:white;padding:3px 8px;"
+            + "border-radius:4px;font-size:11px;'>"
+            + function_owner + "</span>"
+        )
+
+    def asset_badge(apex_id):
+        return (
+            "<span style='background:#003865;color:white;padding:3px 8px;"
+            + "border-radius:4px;font-size:11px;font-weight:bold;'>"
+            + apex_id + "</span>"
+        )
+
+    for plan in filtered:
+        apex_id = plan.get("apex_id", "")
+        func = plan.get("function_owner", "")
+        priority = plan.get("priority", "")
+        escalation = plan.get("escalation_flag", False)
+        flag_html = (
+            " &nbsp;<span style='color:red;font-size:16px;' "
+            "title='Escalation Required'>\U0001f6a9</span>"
+            if escalation else ""
+        )
+        badges = (
+            asset_badge(apex_id) + "&nbsp;"
+            + function_badge(func) + "&nbsp;"
+            + priority_badge(priority) + flag_html
+        )
+        with st.container(border=True):
+            st.markdown(badges, unsafe_allow_html=True)
+            st.subheader(plan.get("threat_event", ""))
+            st.write(plan.get("action_30d", ""))
+            st.caption("KPI: " + plan.get("kpi", ""))
+
+    export_fields = ["apex_id", "threat_event", "function_owner", "priority", "action_30d", "kpi"]
+    output = io.StringIO()
+    writer = _csv.DictWriter(output, fieldnames=export_fields, extrasaction="ignore")
+    writer.writeheader()
+    for plan in filtered:
+        writer.writerow({k: plan.get(k, "") for k in export_fields})
+
+    st.download_button(
+        label="Export Playbook (CSV)",
+        data=output.getvalue().encode("utf-8"),
+        file_name="competitive_playbook.csv",
+        mime="text/csv",
+    )
 
 
 def render_module_5():

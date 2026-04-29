@@ -254,11 +254,14 @@ def main(dry_run: bool = False, verbose: bool = False) -> int:
         brand_name = asset.get("brand_name", apex_id)
         indication = asset.get("indication", "")
 
-        cond_query = (
-            indication
-            if indication and indication not in ("", "[TO BE FILLED]")
-            else INDICATION_FALLBACK.get(apex_id, brand_name)
-        )
+        # Split multi-indication strings on ";" and use only the first term
+        # (e.g. APEX-005: "Generalized Myasthenia Gravis; Sjögren's Disease; ..."
+        #  → "Generalized Myasthenia Gravis")
+        if indication and indication not in ("", "[TO BE FILLED]"):
+            first_indication = indication.split(";")[0].strip()
+            cond_query = first_indication if first_indication else INDICATION_FALLBACK.get(apex_id, brand_name)
+        else:
+            cond_query = INDICATION_FALLBACK.get(apex_id, brand_name)
 
         if verbose:
             print(f"  [{apex_id}] {brand_name}: querying '{cond_query}'")
@@ -346,7 +349,7 @@ def main(dry_run: bool = False, verbose: bool = False) -> int:
 
     # Connector metadata
     dashboard.setdefault("data_sources", {})["clinicaltrials"] = {
-        "last_run":              datetime.datetime.utcnow().isoformat() + "Z",
+        "last_run":              datetime.datetime.now(datetime.timezone.utc).isoformat().replace("+00:00", "Z"),
         "signals_added":         total_ci,
         "milestone_alerts_added": total_ms,
     }

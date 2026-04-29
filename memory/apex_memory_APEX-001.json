@@ -1,0 +1,24 @@
+{
+  "apex_id": "APEX-001",
+  "brand_name": "Darzalex",
+  "therapeutic_area": "Oncology",
+  "asset_stage": "POST-LAUNCH",
+  "run_count": 2,
+  "last_run": "2026-04-29T14:00:33+00:00",
+  "launch_readiness_score": 82,
+  "launch_readiness_status": "LAUNCH-READY",
+  "signal_summary": "Darzalex SC maintains market leadership; HTA body in UK confirmed reimbursement extension.",
+  "key_risks": [
+    "Monitor Darzalex competitive landscape for emerging threats.",
+    "Ensure cross-functional alignment ahead of next governance milestone."
+  ],
+  "recommended_actions": [
+    "Confirm LRS score trajectory for Darzalex at next GCSO review.",
+    "Update comm-ex recommendations based on latest HTA decisions."
+  ],
+  "delta_vs_prior_run": {
+    "lrs_delta": 0,
+    "new_signals": 0,
+    "resolved_risks": 0
+  }
+}

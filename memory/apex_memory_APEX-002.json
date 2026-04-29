@@ -1,19 +1,19 @@
 {
-  "apex_id": "APEX-004",
-  "brand_name": "Tremfya",
-  "therapeutic_area": "Immunology",
-  "asset_stage": "POST-LAUNCH",
+  "apex_id": "APEX-002",
+  "brand_name": "Carvykti",
+  "therapeutic_area": "Oncology",
+  "asset_stage": "LAUNCH",
   "run_count": 2,
   "last_run": "2026-04-29T14:00:33+00:00",
-  "launch_readiness_score": 72,
+  "launch_readiness_score": 62,
   "launch_readiness_status": "ON-TRACK",
-  "signal_summary": "Tremfya IBD indication expansion ADP review scheduled Oct 2026.",
+  "signal_summary": "Carvykti manufacturing scale-up on track; Ghent site investment decision upcoming.",
   "key_risks": [
-    "Monitor Tremfya competitive landscape for emerging threats.",
+    "Monitor Carvykti competitive landscape for emerging threats.",
     "Ensure cross-functional alignment ahead of next governance milestone."
   ],
   "recommended_actions": [
-    "Confirm LRS score trajectory for Tremfya at next GCSO review.",
+    "Confirm LRS score trajectory for Carvykti at next GCSO review.",
     "Update comm-ex recommendations based on latest HTA decisions."
   ],
   "delta_vs_prior_run": {

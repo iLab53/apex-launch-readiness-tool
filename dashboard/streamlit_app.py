@@ -23,6 +23,7 @@ st.caption("Commercial Intelligence for Launch Readiness")
 st.markdown(
     "Integrating regulatory, HTA, and competitive signals to assess launch readiness and strategic risk."
 )
+st.write("App loaded successfully")
 
 # ---------------------------------------------------------------------------
 # Path setup

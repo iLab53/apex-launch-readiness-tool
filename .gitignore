@@ -4,6 +4,7 @@
 
 # python
 __pycache__/
+**/__pycache__/
 *.pyc
 .venv/
 
@@ -17,3 +18,10 @@ secrets.toml
 # OS
 .DS_Store
 Thumbs.db
+
+# outputs (ignore everything except dashboard seed)
+comm-ex/outputs/*
+!comm-ex/outputs/comm_ex_dashboard_ready.json
+
+# agent debug outputs
+agents/outputs/

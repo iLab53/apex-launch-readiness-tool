@@ -1,0 +1,55 @@
+{
+  "asset_id": "APEX-002",
+  "overall_score": 62,
+  "overall_tier": "ON-TRACK",
+  "dimensions": [
+    {
+      "dimension": "market_access",
+      "score": 55,
+      "rationale": "US CMS reimbursement pathway for CAR-T is established via NTAP and pass-through but outcomes-based contracting remains nascent with fewer than 30% of target commercial payers having finalized Carvykti-specific contracts as of Q1 2026. NICE review is still pending with no published draft guidance, creating UK access uncertainty. CMS CMMI model participation is under negotiation but not confirmed, leaving Medicare FFS pull-through at risk. The IRA's cell therapy exemption from Part D negotiation is helpful, but Part B site-of-care payment differentials between hospital outpatient and freestanding centers create reimbursement friction. Commercial payer prior auth turnaround averages 14 days, which is too long given manufacturing slot lead times of 4-6 weeks.",
+      "gap_closing_action": "Execute payer war room: finalize outcomes-based contract templates with UHC, Aetna, and Anthem by June 2026. Submit NICE evidence dossier supplement with updated CARTITUDE long-term survival data within 30 days. Engage CMS CMMI directly at director level to lock participation terms by Q3 2026. Owner: Market Access. Urgency: Immediate."
+    },
+    {
+      "dimension": "medical_affairs",
+      "score": 68,
+      "rationale": "CAR-T center certification network has expanded to approximately 130 US sites, but geographic coverage gaps persist in the Mountain West and Deep South, leaving ~12% of eligible RRMM patients more than 150 miles from a certified center. MSL deployment is at 85% of planned headcount with 42 field MSLs trained on CARTITUDE-4 early-line data. HCP education on patient selection criteria is progressing but community oncologist awareness of referral pathways remains a bottleneck \u2014 only 38% of community hematologist-oncologists surveyed can correctly identify Carvykti eligibility criteria. Safety communication around CRS and ICANS management protocols is well-developed at certified sites but inconsistently understood at referring sites. Real-world evidence generation through CARTITUDE-6 registry is enrolling but behind target by 20%.",
+      "gap_closing_action": "Launch targeted community oncologist referral education campaign covering the 15 highest-volume uncertified hematology practices by state. Accelerate CARTITUDE-6 registry enrollment by adding 10 new participating sites in underrepresented geographies. Deploy 6 additional MSLs to Mountain West and Southeast by August 2026. Owner: Medical Affairs. Urgency: Near-term."
+    },
+    {
+      "dimension": "marketing_brand",
+      "score": 70,
+      "rationale": "Brand messaging anchored to CARTITUDE clinical program is differentiated and FDA-approved key messages around deep/durable response and one-time treatment are resonating with treaters at academic centers. Early-line data storytelling from CARTITUDE-4 is the critical narrative shift from salvage therapy positioning and creative assets exist but have not been fully deployed across all channels. Share of voice among hematologist-oncologists is strong at 42% aided awareness but trails ide-cel (Abecma) in unaided recall among community oncologists by 8 points. Competitive response to talquetamab (Talvey) bispecific positioning as an off-the-shelf alternative is underdeveloped \u2014 current messaging does not directly address the convenience narrative. Patient-facing DTC is limited by CAR-T complexity and REMS, but unbranded disease education on early treatment optimization is underinvested.",
+      "gap_closing_action": "Deploy CARTITUDE-4 early-line campaign across all HCP digital and congress channels by May 2026. Develop competitive response toolkit specifically addressing talquetamab off-the-shelf convenience narrative with durability and depth-of-response counter-messaging. Increase unbranded RRMM patient education spend by 40% to drive earlier specialist referral. Owner: Marketing. Urgency: Immediate."
+    },
+    {
+      "dimension": "commercial_operations",
+      "score": 58,
+      "rationale": "Field force alignment between account managers, MSLs, and patient services hub is functional but coordination gaps exist at the site level. Treatment center account plans are in place for top 50 sites but the next 80 certified centers lack dedicated commercial coverage. CRM data shows only 61% of scheduled HCP touchpoints at certified sites are being completed on cadence. Hub services team is handling apheresis scheduling and slot management but average time from patient identification to apheresis collection is 23 days \u2014 8 days longer than the internal benchmark of 15 days. This delay directly erodes manufacturing slot utilization and patient conversion. Cross-functional launch team meeting cadence has slipped from weekly to biweekly, reducing signal velocity.",
+      "gap_closing_action": "Restore weekly cross-functional launch team cadence immediately. Assign dedicated account managers to the next 30 highest-potential certified sites by June 2026. Implement patient journey time-to-apheresis dashboard with 48-hour escalation trigger when any patient exceeds 18 days. Owner: Commercial Ops. Urgency: Immediate."
+    },
+    {
+      "dimension": "regulatory_compliance",
+      "score": 82,
+      "rationale": "FDA approval is secured with a label that supports RRMM use after prior lines of therapy; CARTITUDE-4 data supporting earlier-line use is included in approved labeling as of the most recent sNDA. REMS program is active and functioning \u2014 all certified sites are compliant with REMS requirements for CRS and neurotoxicity monitoring. EMA conditional approval is in place with post-marketing commitments on track. No new FDA safety signals have emerged since last PADER cycle. The primary regulatory risk is the REMS operational burden on new sites seeking certification, which creates a 90-120 day lag from application to activation. Promotional review committee turnaround is averaging 18 business days, which is slowing campaign deployment.",
+      "gap_closing_action": "Streamline REMS site certification process by pre-staging training modules and dedicating a REMS liaison to the 20 sites currently in the certification pipeline. Reduce promotional review turnaround to 12 business days by adding a dedicated Carvykti reviewer to PRC. Owner: Regulatory. Urgency: Near-term."
+    },
+    {
+      "dimension": "patient_support",
+      "score": 60,
+      "rationale": "Carvykti patient support hub (CarePath) is operational but patient journey complexity for CAR-T creates friction points that are materially affecting conversion. Of patients who complete apheresis, 11% are lost before infusion due to disease progression during the manufacturing bridge period \u2014 this is partially addressable through faster manufacturing but also through better bridging therapy coordination. Financial assistance programs cover copay and travel but caregiver support is limited; 22% of patients cite logistical burden (housing near treatment center, caregiver availability) as a barrier. Patient navigation staffing is at 78% of plan, creating response time delays averaging 3.2 business days for inbound inquiries. NPS among patients who complete treatment is 74 (strong), but among those who discontinue pre-infusion it is 31 (critical).",
+      "gap_closing_action": "Hire 8 additional patient navigators to reduce inquiry response time to under 24 hours by July 2026. Launch caregiver and housing assistance partnership program with Patient Advocate Foundation and Ronald McDonald House equivalents for adult patients. Implement bridging therapy coordination protocol between hub and certified treatment centers to reduce pre-infusion attrition. Owner: Commercial Ops / Patient Services. Urgency: Immediate."
+    },
+    {
+      "dimension": "competitive_positioning",
+      "score": 65,
+      "rationale": "Carvykti holds efficacy differentiation over ide-cel (Abecma) on depth and durability of response based on cross-trial comparison, and CARTITUDE-4 early-line data is a significant competitive moat. However, the competitive landscape has shifted materially: talquetamab (Talvey) and other bispecific antibodies are being positioned as immediately available off-the-shelf alternatives without manufacturing wait times, and are gaining share in the 3L+ setting. Belantamab mafodotin (Blenrep) re-approval and DREAMM-7/8 data create additional competitive pressure in earlier lines. The fundamental competitive vulnerability is the 4-6 week manufacturing vein-to-vein time \u2014 every day of delay is a day a competitor can capture the patient. Pipeline threat: next-gen allogeneic CAR-T programs (CRISPR/Vertex, Caribou) are in Phase 2 and could disrupt the autologous paradigm within 24-36 months.",
+      "gap_closing_action": "Develop and deploy a competitive battle card specifically addressing bispecific antibody convenience narrative with durability and complete response rate data. Accelerate manufacturing cycle time reduction initiative \u2014 target 25% vein-to-vein time reduction by Q4 2026. Commission head-to-head health economics analysis of CAR-T one-time treatment vs. chronic bispecific therapy total cost of care. Owner: Marketing + Supply. Urgency: Immediate."
+    },
+    {
+      "dimension": "supply_distribution",
+      "score": 48,
+      "rationale": "This is the #1 launch constraint. Manufacturing capacity at the Ghent and Legend Biotech facilities is limiting commercial slot availability. Current monthly manufacturing capacity supports approximately 300-350 patients in the US, against an estimated eligible patient pool of 600+ monthly identifications. Slot wait times average 28 days from apheresis to manufacturing start, with total vein-to-vein time of 5-6 weeks. Approximately 8% of manufactured products fail release testing, creating re-manufacturing delays. Geographic distribution of apheresis collection kits and cryopreservation logistics are functional but single-courier dependency (Cryoport) creates fragility. The Raritan NJ facility expansion is on track for H2 2026 commissioning but will not reach full capacity until Q1 2027. Every unfilled manufacturing slot is a lost patient and approximately $465K in unrealized revenue.",
+      "gap_closing_action": "Escalate manufacturing capacity expansion to CEO-level visibility with monthly production dashboard. Negotiate backup cryopreservation courier agreement with World Courier by June 2026. Implement manufacturing slot optimization algorithm that prioritizes patients by disease progression risk to minimize attrition. Accelerate Raritan facility validation timeline by 60 days \u2014 deploy additional QA resources immediately. Reduce release testing failure rate to under 5% through root cause analysis and process controls. Owner: Supply Chain + Manufacturing. Urgency: Immediate \u2014 this is launch-blocking."
+    }
+  ]
+}

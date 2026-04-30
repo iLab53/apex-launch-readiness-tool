@@ -1,5 +1,19 @@
+# env
 .env
+.env.*
+
+# python
 __pycache__/
 *.pyc
-agents/outputs/
-comm-ex/outputs/
+.venv/
+
+# logs
+logs/
+*.log
+
+# secrets
+secrets.toml
+
+# OS
+.DS_Store
+Thumbs.db

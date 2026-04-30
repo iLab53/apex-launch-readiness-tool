@@ -27,7 +27,7 @@ st.markdown(
 # ---------------------------------------------------------------------------
 # Path setup
 # ---------------------------------------------------------------------------
-ROOT_DIR = Path(__file__).parent
+ROOT_DIR = Path(__file__).parent.parent
 ASSET_REG_PATH = ROOT_DIR / "asset-registry" / "apex_assets.json"
 DASHBOARD_PATH = ROOT_DIR / "comm-ex" / "outputs" / "comm_ex_dashboard_ready.json"
 
